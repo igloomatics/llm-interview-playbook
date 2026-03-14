@@ -240,6 +240,101 @@
             border: 1px solid #e1e8ed;
         }
 
+        /* 卡片风格：简洁画风 */
+        .question-card.trading-card {
+            border: 2px solid #dfe6e9;
+            box-shadow: 0 8px 20px rgba(44, 62, 80, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .question-card.trading-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #3498db 0%, #9b59b6 100%);
+        }
+
+        .pack-status {
+            background: white;
+            border: 1px solid #e1e8ed;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #2c3e50;
+            font-size: 0.95em;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .pack-status strong {
+            color: #3498db;
+        }
+
+        .pack-opening-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(20, 25, 35, 0.78);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            animation: fadeIn 0.18s ease-out;
+            backdrop-filter: blur(1px);
+        }
+
+        .pack-opening-box {
+            width: min(420px, 90vw);
+            background: white;
+            border-radius: 16px;
+            border: 2px solid #dfe6e9;
+            text-align: center;
+            padding: 24px 20px;
+            box-shadow: 0 14px 32px rgba(0, 0, 0, 0.22);
+        }
+
+        .pack-card {
+            width: 180px;
+            height: 240px;
+            margin: 0 auto 14px;
+            border-radius: 14px;
+            border: 2px solid #3498db;
+            background: linear-gradient(135deg, #ebf5fb 0%, #d6eaf8 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #2c3e50;
+            animation: packOpen 0.9s ease-in-out;
+            transform-origin: center;
+        }
+
+        .pack-opening-title {
+            font-size: 1.05em;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .pack-opening-subtitle {
+            margin-top: 6px;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        @keyframes packOpen {
+            0% { transform: scale(0.9) rotate(-3deg); opacity: 0; }
+            35% { transform: scale(1.04) rotate(2deg); opacity: 1; }
+            70% { transform: scale(0.98) rotate(-1deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
         .question-header {
             display: flex;
             justify-content: space-between;
@@ -1462,6 +1557,8 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
             const [showWrongAnswersOnly, setShowWrongAnswersOnly] = useState(false);
             const [showTopicIntro, setShowTopicIntro] = useState(false); // 新增：控制专题介绍显示
             const [shuffledOrder, setShuffledOrder] = useState(null); // 新增：保存打乱后的题目顺序
+            const [isOpeningPack, setIsOpeningPack] = useState(false);
+            const [openingPackTopic, setOpeningPackTopic] = useState('');
 
             const filteredQuestions = allQuestions.filter(q => {
                 // 先处理错题筛选
@@ -1716,10 +1813,19 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
             const toggleWrongAnswers = () => {
                 setShowWrongAnswersOnly(!showWrongAnswersOnly);
                 setShowTopicIntro(false); // 切换错题模式时隐藏介绍页
+                setIsOpeningPack(false);
             };
 
             const handleTopicChange = (topic) => {
                 setSelectedTopic(topic);
+                if (topic !== '全部') {
+                    setOpeningPackTopic(topic);
+                    setIsOpeningPack(true);
+                    setTimeout(() => setIsOpeningPack(false), 900);
+                } else {
+                    setIsOpeningPack(false);
+                    setOpeningPackTopic('');
+                }
                 // 如果选择的不是"全部"，且该专题有介绍，则显示介绍页
                 if (topic !== '全部' && topicIntros[topic]) {
                     setShowTopicIntro(true);
@@ -1889,6 +1995,15 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
 
             return (
                 <div className="container">
+                    {isOpeningPack && (
+                        <div className="pack-opening-overlay">
+                            <div className="pack-opening-box">
+                                <div className="pack-card">🎴 卡包</div>
+                                <div className="pack-opening-title">正在拆开「{openingPackTopic}」卡包...</div>
+                                <div className="pack-opening-subtitle">抽取本专题知识卡片</div>
+                            </div>
+                        </div>
+                    )}
                     <div className="header">
                         <h1>🤖 大模型八股面经</h1>
                         <p>从八股到实战，系统拿下 LLM 面试核心知识</p>
@@ -1931,18 +2046,18 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
                             </div>
                         </div>
                         <div className="filter-group">
-                            <span className="filter-label">专题筛选：</span>
+                            <span className="filter-label">卡包选择（专题）：</span>
                             <div className="btn-group" style={{ marginBottom: '10px' }}>
                                 <button
                                     className={`btn ${selectedTopic === '全部' ? 'active' : ''}`}
                                     onClick={() => handleTopicChange('全部')}
                                 >
-                                    全部
+                                    全部卡包
                                 </button>
                             </div>
                             {/* NLP系列 */}
                             <div className="topic-row">
-                                <span className="category-label">📝 NLP：</span>
+                                <span className="category-label">🎒 NLP卡包：</span>
                                 <div className="btn-group">
                                     {['Transformer入门', 'Transformer进阶', '手撕Transformer', 'BERT', 'LLaMA', 'GPT','DeepSeek'].map(topic => (
                                         <button
@@ -1957,7 +2072,7 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
                             </div>
                             {/* 多模态系列 */}
                             <div className="topic-row">
-                                <span className="category-label">🎨 多模态：</span>
+                                <span className="category-label">🎒 多模态卡包：</span>
                                 <div className="btn-group">
                                     {['ViT', 'CLIP', 'BLIP', 'BLIP2', 'LLaVA'].map(topic => (
                                         <button
@@ -1972,7 +2087,7 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
                             </div>
                             {/* 前置理论 */}
                             <div className="topic-row">
-                                <span className="category-label">📚 前置理论：</span>
+                                <span className="category-label">🎒 前置理论卡包：</span>
                                 <div className="btn-group">
                                     <button
                                         className={`btn ${selectedTopic === '经典机器学习' ? 'active' : ''}`}
@@ -1990,7 +2105,7 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
                             </div>
                             {/* 强化学习 */}
                             <div className="topic-row">
-                                <span className="category-label">🎮 强化学习：</span>
+                                <span className="category-label">🎒 强化学习卡包：</span>
                                 <div className="btn-group">
                                     {['Bandits', 'PG', 'Q-Learning', '策略优化', '人类对齐'].map(topic => (
                                         <button
@@ -2004,6 +2119,11 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    <div className="pack-status">
+                        <div>当前卡包：<strong>{selectedTopic === '全部' ? '全部卡包' : selectedTopic}</strong></div>
+                        <div>可抽取卡片：<strong>{displayQuestions.length}</strong> 张</div>
                     </div>
 
                     {/* 错题复习按钮 - 右上角固定位置 */}
@@ -2097,18 +2217,18 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
                         <div className="progress-fill" style={{ width: `${progress}%` }}></div>
                     </div>
 
-                    <div className="question-card">
+                    <div className="question-card trading-card">
                         <div className="question-header">
                             <div className="question-number">
                                 {currentQuestion.topic === '手撕Transformer' ? (
                                     <span>
                                         Step {currentQuestion.order}/{displayQuestions.filter(q => q.topic === '手撕Transformer').length} 
                                         <span style={{ color: '#95a5a6', fontSize: '0.8em', marginLeft: '8px' }}>
-                                            (第 {currentQuestionIndex + 1} 题)
+                                            (第 {currentQuestionIndex + 1} 张卡)
                                         </span>
                                     </span>
                                 ) : (
-                                    `第 ${currentQuestionIndex + 1} / ${displayQuestions.length} 题`
+                                    `卡片 ${currentQuestionIndex + 1} / ${displayQuestions.length}`
                                 )}
                             </div>
                             <div className="badges">
@@ -2368,7 +2488,7 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
                                 <>
                                     {currentQuestionIndex < displayQuestions.length - 1 && (
                                         <button className="btn next" onClick={handleNext}>
-                                            下一题 →
+                                            下一张卡 →
                                         </button>
                                     )}
                                 </>
