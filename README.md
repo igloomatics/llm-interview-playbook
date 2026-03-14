@@ -2,7 +2,7 @@
 
 一个面向大模型学习者的互动刷题网站：覆盖 Transformer、BERT、多模态、强化学习与人类对齐等核心知识，用「做题 + 解析 + 错题复习」帮助你高效备战面试与系统化复习。
 
-在线体验：[<https://igloomatics.github.io/llm-quiz/>](https://igloomatics.github.io/llm-interview-playbook/)
+[点击此处在线体验](https://igloomatics.github.io/llm-interview-playbook/)
 
 ---
 
