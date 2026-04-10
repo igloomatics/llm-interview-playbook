@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>大模型八股面经（LLM Interview Playbook）</title>
+    <title>LLM-playbook</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
     
     <!-- MathJax支持 -->
     <script>
@@ -25,6 +24,21 @@
     
     <script src="questions.js"></script>
     <style>
+        :root {
+            --bg: #fafafa;
+            --surface: #ffffff;
+            --text: #171717;
+            --muted: #737373;
+            --border: #e5e5e5;
+            --accent: #171717;
+            --radius: 2px;
+            --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            --code-bg: #f4f4f5;
+            --code-fg: #27272a;
+            --ok: #16a34a;
+            --bad: #dc2626;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -32,414 +46,448 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-            background: #f5f7fa;
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
-            padding: 20px;
+            padding: 24px 20px 96px;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 42rem;
             margin: 0 auto;
         }
 
         .header {
-            text-align: center;
-            margin-bottom: 30px;
+            text-align: left;
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
         }
 
         .header h1 {
-            font-size: 2em;
-            margin-bottom: 8px;
-            color: #2c3e50;
+            font-size: 1.375rem;
             font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--text);
+            margin-bottom: 6px;
         }
 
         .header p {
-            font-size: 1em;
-            color: #7f8c8d;
+            font-size: 0.875rem;
+            color: var(--muted);
+            font-weight: 400;
         }
 
         .stats {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid #e1e8ed;
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 16px 18px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border);
             display: flex;
-            justify-content: space-around;
+            justify-content: space-between;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 16px 24px;
         }
 
         .stat-item {
-            text-align: center;
+            text-align: left;
+            min-width: 4.5rem;
         }
 
         .stat-value {
-            font-size: 2em;
+            font-size: 1.25rem;
             font-weight: 600;
-            color: #3498db;
+            color: var(--text);
+            letter-spacing: -0.02em;
         }
 
         .stat-label {
-            color: #95a5a6;
-            margin-top: 5px;
-            font-size: 0.9em;
+            color: var(--muted);
+            margin-top: 2px;
+            font-size: 0.75rem;
         }
 
         .controls {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border: 1px solid #e1e8ed;
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 18px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border);
         }
 
         .filter-group {
-            margin-bottom: 15px;
+            margin-bottom: 14px;
+        }
+
+        .filter-group:last-child {
+            margin-bottom: 0;
         }
 
         .filter-label {
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 10px;
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: 8px;
             display: block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--muted);
         }
 
         .category-label {
-            font-weight: 600;
-            color: #2c3e50;
-            margin-right: 12px;
-            font-size: 0.95em;
+            font-weight: 500;
+            color: var(--muted);
+            margin-right: 10px;
+            font-size: 0.8125rem;
             display: inline-block;
-            min-width: 80px;
+            min-width: 5.5rem;
         }
 
         .topic-row {
             display: flex;
-            align-items: center;
-            margin-bottom: 12px;
+            align-items: flex-start;
+            margin-bottom: 0;
             flex-wrap: wrap;
+            gap: 8px 0;
+            padding-bottom: 12px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .topic-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
         }
 
         .btn-group {
             display: flex;
-            gap: 10px;
+            gap: 6px;
             flex-wrap: wrap;
         }
 
         .btn {
-            padding: 8px 18px;
-            border: 1px solid #ddd;
-            background: white;
-            color: #555;
-            border-radius: 6px;
+            padding: 6px 12px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            border-radius: var(--radius);
             cursor: pointer;
-            font-size: 0.9em;
-            transition: all 0.2s;
-            font-weight: 500;
+            font-size: 0.8125rem;
+            transition: background 0.15s, border-color 0.15s, color 0.15s;
+            font-weight: 450;
         }
 
         .btn:hover {
-            background: #f8f9fa;
-            border-color: #3498db;
-            color: #3498db;
+            background: var(--bg);
+            border-color: #d4d4d4;
         }
 
         .btn.active {
-            background: #3498db;
-            color: white;
-            border-color: #3498db;
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
         }
 
         .btn.submit {
-            background: #3498db;
-            color: white;
-            border: none;
-            font-size: 1em;
-            padding: 10px 24px;
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+            font-size: 0.875rem;
+            padding: 8px 16px;
         }
 
         .btn.submit:hover {
-            background: #2980b9;
+            opacity: 0.92;
         }
 
         .btn.submit:disabled {
-            background: #bdc3c7;
+            background: #d4d4d4;
+            border-color: #d4d4d4;
+            color: #737373;
             cursor: not-allowed;
+            opacity: 1;
         }
 
         .btn.next {
-            background: #27ae60;
-            color: white;
-            border: none;
+            background: var(--text);
+            color: #fff;
+            border-color: var(--text);
         }
 
         .btn.next:hover {
-            background: #229954;
+            opacity: 0.9;
         }
 
-        /* 错题复习按钮样式 - 右上角固定位置 */
         .wrong-answers-btn {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            font-size: 0.95em;
-            font-weight: 600;
-            border-radius: 8px;
+            top: 16px;
+            right: 16px;
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border);
+            padding: 8px 14px;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            border-radius: var(--radius);
             cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+            transition: background 0.15s, border-color 0.15s;
             z-index: 1000;
         }
 
         .wrong-answers-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(231, 76, 60, 0.4);
-            background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+            background: var(--bg);
+            border-color: #d4d4d4;
         }
 
         .wrong-answers-btn:disabled {
-            background: #bdc3c7;
+            opacity: 0.45;
             cursor: not-allowed;
-            transform: none;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            opacity: 0.6;
         }
 
         .wrong-answers-btn .count-badge {
             display: inline-block;
-            background: rgba(255, 255, 255, 0.3);
-            padding: 3px 10px;
-            border-radius: 12px;
-            margin-left: 8px;
-            font-size: 0.85em;
-            font-weight: bold;
+            background: var(--bg);
+            padding: 1px 8px;
+            border-radius: var(--radius);
+            margin-left: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            border: 1px solid var(--border);
         }
 
         .wrong-answers-btn.active {
-            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
-            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+            background: var(--text);
+            color: #fff;
+            border-color: var(--text);
+        }
+
+        .wrong-answers-btn.active .count-badge {
+            background: transparent;
+            border-color: rgba(255, 255, 255, 0.35);
+            color: inherit;
         }
 
         .wrong-answers-btn.active:hover {
-            background: linear-gradient(135deg, #229954 0%, #1e8449 100%);
-            box-shadow: 0 6px 16px rgba(39, 174, 96, 0.4);
+            opacity: 0.92;
         }
 
         .question-card {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            margin-bottom: 20px;
-            border: 1px solid #e1e8ed;
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 22px 20px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border);
         }
 
-        /* 卡片风格：简洁画风 */
         .question-card.trading-card {
-            border: 2px solid #dfe6e9;
-            box-shadow: 0 8px 20px rgba(44, 62, 80, 0.08);
-            position: relative;
-            overflow: hidden;
+            box-shadow: none;
         }
 
         .question-card.trading-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 6px;
-            background: linear-gradient(90deg, #3498db 0%, #9b59b6 100%);
+            display: none;
         }
 
-        .pack-status {
-            background: white;
-            border: 1px solid #e1e8ed;
-            border-radius: 12px;
-            padding: 14px 18px;
-            margin-bottom: 16px;
+        .book-status {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 12px 14px;
+            margin-bottom: 14px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            color: #2c3e50;
-            font-size: 0.95em;
+            color: var(--text);
+            font-size: 0.8125rem;
             gap: 10px;
             flex-wrap: wrap;
         }
 
-        .pack-status strong {
-            color: #3498db;
+        .book-status strong {
+            color: var(--text);
+            font-weight: 600;
         }
 
-        .pack-opening-overlay {
+        .book-status-main {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .book-status-back {
+            padding: 4px 10px;
+            font-size: 0.75rem;
+        }
+
+        .book-opening-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(20, 25, 35, 0.78);
+            background: rgba(0, 0, 0, 0.4);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 3000;
-            animation: fadeIn 0.18s ease-out;
-            backdrop-filter: blur(1px);
+            animation: fadeIn 0.15s ease-out;
         }
 
-        .pack-opening-box {
-            width: min(420px, 90vw);
-            background: white;
-            border-radius: 16px;
-            border: 2px solid #dfe6e9;
+        .book-opening-box {
+            width: min(360px, 90vw);
+            background: var(--surface);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
             text-align: center;
-            padding: 24px 20px;
-            box-shadow: 0 14px 32px rgba(0, 0, 0, 0.22);
+            padding: 28px 20px;
         }
 
-        .pack-card {
-            width: 180px;
-            height: 240px;
-            margin: 0 auto 14px;
-            border-radius: 14px;
-            border: 2px solid #3498db;
-            background: linear-gradient(135deg, #ebf5fb 0%, #d6eaf8 100%);
+        .book-opening-cover {
+            width: 120px;
+            height: 72px;
+            margin: 0 auto 16px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--bg);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2em;
-            font-weight: 700;
-            color: #2c3e50;
-            animation: packOpen 0.9s ease-in-out;
-            transform-origin: center;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--muted);
         }
 
-        .pack-opening-title {
-            font-size: 1.05em;
-            color: #2c3e50;
-            font-weight: 600;
+        .book-opening-title {
+            font-size: 0.9375rem;
+            color: var(--text);
+            font-weight: 500;
         }
 
-        .pack-opening-subtitle {
+        .book-opening-subtitle {
             margin-top: 6px;
-            color: #7f8c8d;
-            font-size: 0.9em;
-        }
-
-        @keyframes packOpen {
-            0% { transform: scale(0.9) rotate(-3deg); opacity: 0; }
-            35% { transform: scale(1.04) rotate(2deg); opacity: 1; }
-            70% { transform: scale(0.98) rotate(-1deg); opacity: 1; }
-            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+            color: var(--muted);
+            font-size: 0.8125rem;
         }
 
         .question-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
+            align-items: flex-start;
+            margin-bottom: 18px;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 12px;
         }
 
         .question-number {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #3498db;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--muted);
         }
 
         .badges {
             display: flex;
-            gap: 10px;
+            gap: 6px;
+            flex-wrap: wrap;
         }
 
         .badge {
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-size: 0.85em;
+            padding: 3px 8px;
+            border-radius: var(--radius);
+            font-size: 0.6875rem;
             font-weight: 500;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--muted);
         }
 
         .badge.difficulty-easy {
-            background: #d5f4e6;
-            color: #27ae60;
+            border-color: #d4d4d4;
+            color: var(--text);
         }
 
         .badge.difficulty-medium {
-            background: #ffeaa7;
-            color: #f39c12;
+            border-color: #a3a3a3;
+            color: var(--text);
         }
 
         .badge.difficulty-hard {
-            background: #fadbd8;
-            color: #e74c3c;
+            border-color: var(--text);
+            color: var(--text);
+            background: var(--surface);
         }
 
         .badge.topic {
-            background: #dfe6e9;
-            color: #2d3436;
+            border-color: var(--border);
+            color: var(--muted);
+        }
+
+        .badge-type {
+            border-color: var(--border) !important;
+            background: var(--surface) !important;
+            color: var(--text) !important;
         }
 
         .question-content {
-            font-size: 1.1em;
-            line-height: 1.6;
-            margin-bottom: 20px;
-            color: #333;
+            font-size: 0.9375rem;
+            line-height: 1.65;
+            margin-bottom: 18px;
+            color: var(--text);
         }
 
         .options {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 8px;
         }
 
         .option {
-            padding: 15px;
-            border: 1px solid #e1e8ed;
-            border-radius: 8px;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
             cursor: pointer;
-            transition: all 0.2s;
-            background: white;
+            transition: background 0.12s;
+            background: var(--surface);
         }
 
         .option:hover {
-            border-color: #3498db;
-            background: #f8f9fa;
+            background: var(--bg);
         }
 
         .option.selected {
-            border-color: #3498db;
-            background: #ebf5fb;
+            background: var(--bg);
+            border-color: var(--text);
         }
 
         .option.correct {
-            border-color: #27ae60;
-            background: #d5f4e6;
+            background: rgba(22, 163, 74, 0.06);
+            border-color: var(--ok);
+            border-width: 1px;
         }
 
         .option.incorrect {
-            border-color: #e74c3c;
-            background: #fadbd8;
+            background: rgba(220, 38, 38, 0.06);
+            border-color: var(--bad);
+            border-width: 1px;
         }
 
         .code-block {
-            background: #282c34;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 15px 0;
+            background: var(--code-bg);
+            padding: 14px 16px;
+            border-radius: var(--radius);
+            margin: 14px 0;
             overflow-x: auto;
             position: relative;
-            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-            border: 1px solid #3e4451;
+            font-family: ui-monospace, 'Consolas', 'Monaco', 'Courier New', monospace;
+            border: 1px solid var(--border);
         }
 
         .code-block code {
-            color: #abb2bf;
-            font-size: 0.95em;
+            color: var(--code-fg);
+            font-size: 0.875rem;
             line-height: 1.6;
-            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-family: inherit;
         }
 
         .code-block pre {
@@ -448,17 +496,22 @@
             word-wrap: normal;
         }
 
-        /* Prism.js Atom One Dark主题配色 */
+        /* Prism token 高亮（浅色底，与整站极简一致） */
         .code-block .token.comment,
         .code-block .token.prolog,
         .code-block .token.doctype,
-        .code-block .token.cdata {
-            color: #5c6370;
+        .code-block .token.cdata,
+        .unified-code-editor .token.comment,
+        .unified-code-editor .token.prolog,
+        .unified-code-editor .token.doctype,
+        .unified-code-editor .token.cdata {
+            color: #71717a;
             font-style: italic;
         }
 
-        .code-block .token.punctuation {
-            color: #abb2bf;
+        .code-block .token.punctuation,
+        .unified-code-editor .token.punctuation {
+            color: #52525b;
         }
 
         .code-block .token.property,
@@ -467,8 +520,15 @@
         .code-block .token.number,
         .code-block .token.constant,
         .code-block .token.symbol,
-        .code-block .token.deleted {
-            color: #d19a66;
+        .code-block .token.deleted,
+        .unified-code-editor .token.property,
+        .unified-code-editor .token.tag,
+        .unified-code-editor .token.boolean,
+        .unified-code-editor .token.number,
+        .unified-code-editor .token.constant,
+        .unified-code-editor .token.symbol,
+        .unified-code-editor .token.deleted {
+            color: #b45309;
         }
 
         .code-block .token.selector,
@@ -476,86 +536,109 @@
         .code-block .token.string,
         .code-block .token.char,
         .code-block .token.builtin,
-        .code-block .token.inserted {
-            color: #98c379;
+        .code-block .token.inserted,
+        .unified-code-editor .token.selector,
+        .unified-code-editor .token.attr-name,
+        .unified-code-editor .token.string,
+        .unified-code-editor .token.char,
+        .unified-code-editor .token.builtin,
+        .unified-code-editor .token.inserted {
+            color: #15803d;
         }
 
         .code-block .token.operator,
         .code-block .token.entity,
         .code-block .token.url,
         .code-block .language-css .token.string,
-        .code-block .style .token.string {
-            color: #56b6c2;
+        .code-block .style .token.string,
+        .unified-code-editor .token.operator,
+        .unified-code-editor .token.entity,
+        .unified-code-editor .token.url,
+        .unified-code-editor .language-css .token.string,
+        .unified-code-editor .style .token.string {
+            color: #0e7490;
         }
 
         .code-block .token.atrule,
         .code-block .token.attr-value,
-        .code-block .token.keyword {
-            color: #c678dd;
+        .code-block .token.keyword,
+        .unified-code-editor .token.atrule,
+        .unified-code-editor .token.attr-value,
+        .unified-code-editor .token.keyword {
+            color: #6d28d9;
             font-weight: 600;
         }
 
         .code-block .token.function,
-        .code-block .token.class-name {
-            color: #61afef;
+        .code-block .token.class-name,
+        .unified-code-editor .token.function,
+        .unified-code-editor .token.class-name {
+            color: #0369a1;
         }
 
         .code-block .token.regex,
         .code-block .token.important,
-        .code-block .token.variable {
-            color: #e06c75;
+        .code-block .token.variable,
+        .unified-code-editor .token.regex,
+        .unified-code-editor .token.important,
+        .unified-code-editor .token.variable {
+            color: #be123c;
         }
 
         .code-block .token.important,
-        .code-block .token.bold {
-            font-weight: bold;
+        .code-block .token.bold,
+        .unified-code-editor .token.important,
+        .unified-code-editor .token.bold {
+            font-weight: 600;
         }
 
-        .code-block .token.italic {
+        .code-block .token.italic,
+        .unified-code-editor .token.italic {
             font-style: italic;
         }
 
         .code-blank {
             display: inline-block;
             min-width: 120px;
-            padding: 2px 8px;
-            background: #21252b;
-            border: 2px dashed #61afef;
-            border-radius: 4px;
-            color: #abb2bf;
-            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-            font-size: 0.95em;
+            padding: 3px 8px;
+            background: var(--surface);
+            border: 1px dashed var(--border);
+            border-radius: var(--radius);
+            color: var(--text);
+            font-family: ui-monospace, 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.875rem;
             outline: none;
-            transition: all 0.2s;
+            transition: border-color 0.15s, background 0.15s;
+            vertical-align: baseline;
         }
 
         .code-blank:focus {
-            background: #2c313a;
             border-style: solid;
-            border-color: #61afef;
+            border-color: var(--text);
+            background: var(--surface);
         }
 
         .code-blank.correct {
-            background: #1a3a2e;
-            border-color: #98c379;
+            background: rgba(22, 163, 74, 0.08);
+            border: 1px solid var(--ok);
             border-style: solid;
-            color: #98c379;
+            color: var(--text);
         }
 
         .code-blank.incorrect {
-            background: #3a1a1a;
-            border-color: #e06c75;
+            background: rgba(220, 38, 38, 0.08);
+            border: 1px solid var(--bad);
             border-style: solid;
-            color: #e06c75;
+            color: var(--text);
         }
 
         .code-blank:disabled {
             cursor: not-allowed;
-            opacity: 0.9;
+            opacity: 1;
         }
 
         .code-blank::placeholder {
-            color: #5c6370;
+            color: var(--muted);
         }
 
         /* 多行代码输入框样式 */
@@ -565,195 +648,180 @@
 
         .code-textarea-label {
             display: block;
-            font-weight: 600;
-            color: #abb2bf;
+            font-weight: 500;
+            color: var(--muted);
             margin-bottom: 8px;
-            font-size: 0.95em;
+            font-size: 0.8125rem;
         }
 
         .code-textarea {
             width: 100%;
             min-height: 150px;
-            padding: 12px;
-            background: #21252b;
-            border: 2px dashed #61afef;
-            border-radius: 6px;
-            color: #abb2bf;
-            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-            font-size: 0.9em;
+            padding: 12px 14px;
+            background: var(--surface);
+            border: 1px dashed var(--border);
+            border-radius: var(--radius);
+            color: var(--text);
+            font-family: ui-monospace, 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.875rem;
             line-height: 1.6;
             resize: vertical;
             outline: none;
-            transition: all 0.2s;
+            transition: border-color 0.15s, background 0.15s;
         }
 
         .code-textarea:focus {
-            background: #2c313a;
             border-style: solid;
-            border-color: #61afef;
+            border-color: var(--text);
         }
 
         .code-textarea.correct {
-            background: #1a3a2e;
-            border-color: #98c379;
+            background: rgba(22, 163, 74, 0.08);
+            border: 1px solid var(--ok);
             border-style: solid;
-            color: #98c379;
+            color: var(--text);
         }
 
         .code-textarea.incorrect {
-            background: #3a1a1a;
-            border-color: #e06c75;
+            background: rgba(220, 38, 38, 0.08);
+            border: 1px solid var(--bad);
             border-style: solid;
-            color: #e06c75;
+            color: var(--text);
         }
 
         .code-textarea:disabled {
             cursor: not-allowed;
-            opacity: 0.9;
         }
 
         .code-textarea::placeholder {
-            color: #5c6370;
+            color: var(--muted);
         }
 
         /* 统一代码编辑器样式 - 用于代码默写 */
         .unified-code-editor {
-            background: #282c34;
-            border-radius: 8px;
+            background: var(--code-bg);
+            border-radius: var(--radius);
             padding: 0;
-            margin: 16px 0;
+            margin: 14px 0;
             overflow: hidden;
-            border: 1px solid #3e4451;
+            border: 1px solid var(--border);
         }
 
         .unified-code-editor pre {
             margin: 0;
-            padding: 16px;
+            padding: 14px 16px;
             overflow-x: auto;
         }
 
         .unified-code-editor code {
-            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-            font-size: 0.9em;
+            font-family: ui-monospace, 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.875rem;
             line-height: 1.6;
-            color: #abb2bf;
+            color: var(--code-fg);
         }
 
         .inline-code-input {
-            background: #21252b;
-            border: 2px solid #61afef;
-            border-radius: 4px;
-            color: #61afef;
-            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-            font-size: 0.9em;
+            background: var(--surface);
+            border: 1px dashed var(--border);
+            border-radius: var(--radius);
+            color: var(--text);
+            font-family: ui-monospace, 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.875rem;
             line-height: 1.6;
-            padding: 4px 8px;
+            padding: 10px 12px;
             outline: none;
             resize: vertical;
             width: 100%;
-            margin: 4px 0;
+            margin: 6px 0;
             min-height: 100px;
-            transition: all 0.2s;
+            transition: border-color 0.15s, background 0.15s;
             display: block;
         }
 
         .inline-code-input:focus {
-            background: #2c313a;
-            border-color: #61afef;
-            box-shadow: 0 0 0 3px rgba(97, 175, 239, 0.1);
+            border-style: solid;
+            border-color: var(--text);
+            outline: none;
         }
 
         .inline-code-input.correct {
-            background: #1a3a2e;
-            border-color: #98c379;
-            color: #98c379;
+            background: rgba(22, 163, 74, 0.08);
+            border: 1px solid var(--ok);
+            border-style: solid;
+            color: var(--text);
         }
 
         .inline-code-input.incorrect {
-            background: #3a1a1a;
-            border-color: #e06c75;
-            color: #e06c75;
+            background: rgba(220, 38, 38, 0.08);
+            border: 1px solid var(--bad);
+            border-style: solid;
+            color: var(--text);
         }
 
         .inline-code-input:disabled {
             cursor: not-allowed;
-            opacity: 0.9;
         }
 
         .inline-code-input::placeholder {
-            color: #5c6370;
-            font-style: italic;
+            color: var(--muted);
         }
 
         .code-hint {
             display: inline-block;
-            color: #5c6370;
-            font-style: italic;
-            font-size: 0.85em;
-            margin-left: 8px;
+            color: var(--muted);
+            font-size: 0.8125rem;
+            margin-left: 6px;
         }
 
         .feedback {
-            margin-top: 20px;
-            padding: 16px;
-            border-radius: 8px;
-            animation: slideIn 0.3s ease-out;
-            border-left: 4px solid;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            margin-top: 18px;
+            padding: 14px 16px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--bg);
         }
 
         .feedback.correct {
-            background: #d5f4e6;
-            border-left-color: #27ae60;
+            border-color: var(--border);
         }
 
         .feedback.incorrect {
-            background: #fadbd8;
-            border-left-color: #e74c3c;
+            border-color: #d4d4d4;
         }
 
         .feedback-title {
-            font-weight: 600;
-            font-size: 1em;
+            font-weight: 500;
+            font-size: 0.8125rem;
             margin-bottom: 8px;
+            color: var(--text);
         }
 
         .feedback.correct .feedback-title {
-            color: #27ae60;
+            color: var(--text);
         }
 
         .feedback.incorrect .feedback-title {
-            color: #e74c3c;
+            color: var(--muted);
         }
 
         .explanation {
-            line-height: 1.8;
-            color: #2c3e50;
-            font-size: 0.95em;
+            line-height: 1.7;
+            color: var(--text);
+            font-size: 0.875rem;
         }
 
         .explanation strong {
             font-weight: 600;
-            color: #2c3e50;
+            color: var(--text);
         }
 
         .explanation h1,
         .explanation h2,
         .explanation h3,
         .explanation h4 {
-            margin-top: 1.2em;
-            margin-bottom: 0.6em;
-            color: #2c3e50;
+            margin-top: 1.1em;
+            margin-bottom: 0.5em;
+            color: var(--text);
             font-weight: 600;
         }
 
@@ -784,18 +852,20 @@
         }
 
         .explanation code {
-            background: #f5f7fa;
-            padding: 2px 6px;
-            border-radius: 3px;
+            background: var(--surface);
+            padding: 1px 5px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
             font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-            font-size: 0.9em;
-            color: #e74c3c;
+            font-size: 0.85em;
+            color: var(--text);
         }
 
         .explanation pre {
-            background: #282c34;
-            padding: 15px;
-            border-radius: 6px;
+            background: var(--code-bg);
+            padding: 14px 16px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
             overflow-x: auto;
             margin: 1em 0;
         }
@@ -803,16 +873,16 @@
         .explanation pre code {
             background: none;
             padding: 0;
-            color: #abb2bf;
-            font-size: 0.9em;
+            color: var(--code-fg);
+            font-size: 0.875rem;
+            border: none;
         }
 
         .explanation blockquote {
-            border-left: 4px solid #3498db;
+            border-left: 2px solid var(--border);
             padding-left: 1em;
             margin: 1em 0;
-            color: #555;
-            font-style: italic;
+            color: var(--muted);
         }
 
         .action-buttons {
@@ -824,73 +894,69 @@
 
         .no-questions {
             text-align: center;
-            padding: 60px 20px;
-            color: #666;
-            font-size: 1.2em;
+            padding: 48px 20px;
+            color: var(--muted);
+            font-size: 0.9375rem;
         }
 
         .progress-bar {
-            height: 4px;
-            background: #e1e8ed;
-            border-radius: 2px;
+            height: 2px;
+            background: var(--border);
+            border-radius: 0;
             overflow: hidden;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         .progress-fill {
             height: 100%;
-            background: #3498db;
-            transition: width 0.3s ease;
+            background: var(--text);
+            transition: width 0.25s ease;
         }
 
         .resource-button {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: #3498db;
-            color: white;
-            border: none;
+            bottom: 20px;
+            right: 20px;
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius);
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border);
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
-            font-size: 1.5em;
+            font-size: 1rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s;
+            transition: background 0.15s;
             z-index: 1000;
         }
 
         .resource-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 16px rgba(52, 152, 219, 0.4);
+            background: var(--bg);
         }
 
         .image-button {
             position: fixed;
-            bottom: 100px;
-            right: 30px;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: #f39c12;
-            color: white;
-            border: none;
+            bottom: 72px;
+            right: 20px;
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius);
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border);
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(243, 156, 18, 0.4);
-            font-size: 1.5em;
+            font-size: 1rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s;
+            transition: background 0.15s;
             z-index: 1000;
         }
 
         .image-button:hover {
-            transform: scale(1.1) rotate(15deg);
-            box-shadow: 0 6px 20px rgba(243, 156, 18, 0.6);
+            background: var(--bg);
         }
 
         .image-modal {
@@ -991,134 +1057,175 @@
         }
 
         .resource-content {
-            background: white;
-            border-radius: 12px;
-            padding: 40px;
-            max-width: 600px;
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 28px 24px;
+            max-width: 520px;
             width: 90%;
             max-height: 80vh;
             overflow-y: auto;
             position: relative;
-            animation: slideUp 0.3s ease-out;
-            border: 1px solid #e1e8ed;
-        }
-
-        @keyframes slideUp {
-            from {
-                transform: translateY(30px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+            border: 1px solid var(--border);
         }
 
         .resource-content h2 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-            font-size: 1.6em;
+            color: var(--text);
+            margin-bottom: 18px;
+            font-size: 1rem;
             font-weight: 600;
+            letter-spacing: -0.02em;
         }
 
         .resource-section {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .resource-section h3 {
-            color: #34495e;
-            font-size: 1.1em;
-            margin-bottom: 10px;
-            border-left: 4px solid #3498db;
-            padding-left: 10px;
-            font-weight: 600;
+            color: var(--muted);
+            font-size: 0.6875rem;
+            margin-bottom: 8px;
+            padding-left: 0;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border-left: none;
         }
 
         .resource-link {
             display: block;
-            padding: 12px 15px;
-            margin: 8px 0;
-            background: #f8f9fa;
-            border-radius: 6px;
-            color: #3498db;
+            padding: 10px 12px;
+            margin: 0 0 6px;
+            background: var(--bg);
+            border-radius: var(--radius);
+            color: var(--text);
             text-decoration: none;
-            transition: all 0.2s;
-            border: 1px solid transparent;
+            transition: background 0.12s;
+            border: 1px solid var(--border);
         }
 
         .resource-link:hover {
-            background: #e8f4f8;
-            border-color: #3498db;
-            transform: translateX(4px);
+            background: var(--surface);
+            border-color: #d4d4d4;
         }
 
         .resource-link-title {
-            font-weight: 600;
+            font-weight: 500;
             display: block;
-            margin-bottom: 3px;
-            color: #2c3e50;
+            margin-bottom: 2px;
+            color: var(--text);
+            font-size: 0.8125rem;
         }
 
         .resource-link-desc {
-            font-size: 0.85em;
-            color: #7f8c8d;
+            font-size: 0.75rem;
+            color: var(--muted);
+            line-height: 1.45;
         }
 
         .close-modal {
             position: absolute;
-            top: 15px;
-            right: 15px;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: #ecf0f1;
-            border: none;
+            top: 12px;
+            right: 12px;
+            width: 28px;
+            height: 28px;
+            border-radius: var(--radius);
+            background: var(--bg);
+            border: 1px solid var(--border);
             cursor: pointer;
-            font-size: 1.3em;
-            color: #7f8c8d;
-            transition: all 0.2s;
+            font-size: 1.1rem;
+            line-height: 1;
+            color: var(--muted);
+            transition: background 0.12s, color 0.12s;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
         .close-modal:hover {
-            background: #bdc3c7;
-            color: #2c3e50;
+            background: var(--surface);
+            color: var(--text);
+        }
+
+        .callout {
+            border: 1px solid var(--border);
+            background: var(--bg);
+            padding: 14px 16px;
+            margin-bottom: 16px;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            color: var(--text);
+            line-height: 1.55;
+        }
+
+        .callout-title {
+            font-weight: 500;
+            margin-bottom: 6px;
+            font-size: 0.8125rem;
+            color: var(--text);
+        }
+
+        .hint-box {
+            background: var(--surface);
+            padding: 14px 16px;
+            border-radius: var(--radius);
+            margin-top: 16px;
+            color: var(--text);
+            border: 1px solid var(--border);
+            font-size: 0.875rem;
+            line-height: 1.65;
+        }
+
+        .image-button.is-shuffled {
+            border-color: var(--text);
+            background: var(--bg);
+        }
+
+        .btn-ghost {
+            background: var(--surface) !important;
+            color: var(--text) !important;
+            border: 1px solid var(--border) !important;
+        }
+
+        .btn-muted {
+            background: var(--bg) !important;
+            color: var(--muted) !important;
+            border: 1px solid var(--border) !important;
         }
 
         /* 专题介绍页面样式 */
         .topic-intro {
-            background: white;
-            border-radius: 12px;
-            padding: 40px;
-            margin-bottom: 20px;
-            border: 1px solid #e1e8ed;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 28px 22px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border);
         }
 
         .topic-intro-header {
-            text-align: center;
-            margin-bottom: 30px;
+            text-align: left;
+            margin-bottom: 22px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
         }
 
         .topic-intro-title {
-            font-size: 2em;
-            color: #2c3e50;
-            margin-bottom: 10px;
+            font-size: 1.25rem;
+            color: var(--text);
+            margin-bottom: 6px;
             font-weight: 600;
+            letter-spacing: -0.02em;
         }
 
         .topic-intro-subtitle {
-            color: #7f8c8d;
-            font-size: 1.1em;
+            color: var(--muted);
+            font-size: 0.875rem;
         }
 
         .topic-intro-content {
-            margin-bottom: 30px;
-            line-height: 1.8;
-            color: #34495e;
-            font-size: 1.05em;
+            margin-bottom: 22px;
+            line-height: 1.7;
+            color: var(--text);
+            font-size: 0.9375rem;
         }
 
         .topic-intro-content p {
@@ -1141,62 +1248,66 @@
 
         .topic-intro-image img {
             max-width: 100%;
-            max-height: 500px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-height: 420px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
         }
 
         .topic-intro-actions {
-            text-align: center;
-            margin-top: 30px;
+            text-align: left;
+            margin-top: 22px;
         }
 
         .start-quiz-btn {
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 1.1em;
-            font-weight: 600;
-            border-radius: 8px;
+            background: var(--accent);
+            color: #fff;
+            border: 1px solid var(--accent);
+            padding: 10px 22px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border-radius: var(--radius);
             cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+            transition: opacity 0.15s;
         }
 
         .start-quiz-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(52, 152, 219, 0.4);
-            background: linear-gradient(135deg, #2980b9 0%, #21618c 100%);
+            opacity: 0.9;
         }
 
         @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.6em;
+            body {
+                padding: 20px 16px 88px;
             }
-            
+
+            .wrong-answers-btn {
+                top: 12px;
+                right: 12px;
+                padding: 6px 10px;
+                font-size: 0.75rem;
+            }
+
             .question-card {
-                padding: 20px;
+                padding: 18px 16px;
             }
 
             .image-button {
-                width: 50px;
-                height: 50px;
-                bottom: 85px;
-                right: 20px;
-                font-size: 1.2em;
+                width: 40px;
+                height: 40px;
+                bottom: 68px;
+                right: 16px;
+                font-size: 0.9rem;
             }
 
             .resource-button {
-                width: 50px;
-                height: 50px;
-                bottom: 20px;
-                right: 20px;
-                font-size: 1.2em;
+                width: 40px;
+                height: 40px;
+                bottom: 16px;
+                right: 16px;
+                font-size: 0.9rem;
             }
 
             .resource-content {
-                padding: 30px 20px;
+                padding: 24px 18px;
             }
 
             .image-modal-content {
@@ -1557,8 +1668,8 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
             const [showWrongAnswersOnly, setShowWrongAnswersOnly] = useState(false);
             const [showTopicIntro, setShowTopicIntro] = useState(false); // 新增：控制专题介绍显示
             const [shuffledOrder, setShuffledOrder] = useState(null); // 新增：保存打乱后的题目顺序
-            const [isOpeningPack, setIsOpeningPack] = useState(false);
-            const [openingPackTopic, setOpeningPackTopic] = useState('');
+            const [isOpeningBook, setIsOpeningBook] = useState(false);
+            const [openingBookTopic, setOpeningBookTopic] = useState('');
 
             const filteredQuestions = allQuestions.filter(q => {
                 // 先处理错题筛选
@@ -1813,18 +1924,18 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
             const toggleWrongAnswers = () => {
                 setShowWrongAnswersOnly(!showWrongAnswersOnly);
                 setShowTopicIntro(false); // 切换错题模式时隐藏介绍页
-                setIsOpeningPack(false);
+                setIsOpeningBook(false);
             };
 
             const handleTopicChange = (topic) => {
                 setSelectedTopic(topic);
                 if (topic !== '全部') {
-                    setOpeningPackTopic(topic);
-                    setIsOpeningPack(true);
-                    setTimeout(() => setIsOpeningPack(false), 900);
+                    setOpeningBookTopic(topic);
+                    setIsOpeningBook(true);
+                    setTimeout(() => setIsOpeningBook(false), 900);
                 } else {
-                    setIsOpeningPack(false);
-                    setOpeningPackTopic('');
+                    setIsOpeningBook(false);
+                    setOpeningBookTopic('');
                 }
                 // 如果选择的不是"全部"，且该专题有介绍，则显示介绍页
                 if (topic !== '全部' && topicIntros[topic]) {
@@ -1872,7 +1983,7 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
                                             {/* 代码输入框 - 内联在代码中 */}
                                             {i < parts.length - 1 && (
                                                 <>
-                                                    <span className="code-hint"># ✍️ 在下方补全代码 (空白 {i + 1})</span>
+                                                    <span className="code-hint"># 空白 {i + 1}</span>
                                                     {'\n'}
                                                     <textarea
                                                         className={`inline-code-input ${showFeedback ? (
@@ -1937,8 +2048,8 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
                 return (
                     <div className="container">
                         <div className="header">
-                            <h1>🤖 大模型八股面经</h1>
-                            <p>LLM Interview Playbook</p>
+                            <h1>LLM-playbook</h1>
+                            <p>书架上的薄册 · 取下即练</p>
                         </div>
                         
                         {/* 错题复习按钮 - 右上角固定位置 */}
@@ -1948,7 +2059,7 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
                             disabled={wrongAnswerIds.size === 0}
                             title={wrongAnswerIds.size === 0 ? '暂无错题' : '点击查看错题'}
                         >
-                            {showWrongAnswersOnly ? '✅ 返回全部' : '❌ 错题复习'}
+                            {showWrongAnswersOnly ? '回书架' : '错题复习'}
                             {wrongAnswerIds.size > 0 && (
                                 <span className="count-badge">{wrongAnswerIds.size}</span>
                             )}
@@ -1958,11 +2069,10 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
                             <div className="no-questions">
                                 {showWrongAnswersOnly ? (
                                     <>
-                                        <div style={{ fontSize: '2em', marginBottom: '15px' }}>🎉</div>
-                                        <div style={{ fontSize: '1.2em', marginBottom: '10px', fontWeight: 'bold' }}>
-                                            恭喜！所有错题都已掌握
+                                        <div style={{ fontSize: '0.9375rem', marginBottom: '10px', fontWeight: '600', color: 'var(--text)' }}>
+                                            错题已清空
                                         </div>
-                                        <div style={{ color: '#7f8c8d', marginBottom: '20px' }}>
+                                        <div style={{ color: 'var(--muted)', marginBottom: '20px', fontSize: '0.875rem' }}>
                                             你已经把所有错题都答对了，继续保持！
                                         </div>
                                         <button 
@@ -1995,18 +2105,18 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
 
             return (
                 <div className="container">
-                    {isOpeningPack && (
-                        <div className="pack-opening-overlay">
-                            <div className="pack-opening-box">
-                                <div className="pack-card">🎴 卡包</div>
-                                <div className="pack-opening-title">正在拆开「{openingPackTopic}」卡包...</div>
-                                <div className="pack-opening-subtitle">抽取本专题知识卡片</div>
+                    {isOpeningBook && (
+                        <div className="book-opening-overlay">
+                            <div className="book-opening-box">
+                                <div className="book-opening-cover">薄册</div>
+                                <div className="book-opening-title">从书架取下《{openingBookTopic}》…</div>
+                                <div className="book-opening-subtitle">小小一册，专治一个小专题</div>
                             </div>
                         </div>
                     )}
                     <div className="header">
-                        <h1>🤖 大模型八股面经</h1>
-                        <p>从八股到实战，系统拿下 LLM 面试核心知识</p>
+                        <h1>LLM-playbook</h1>
+                        <p>书架上的薄册 · 每册一个小专题 · 取下再练 · 错题可收复</p>
                     </div>
 
                     <div className="stats">
@@ -2026,38 +2136,15 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
                         </div>
                         <div className="stat-item">
                             <div className="stat-value">{displayQuestions.length}</div>
-                            <div className="stat-label">题库总数</div>
+                            <div className="stat-label">可见题数</div>
                         </div>
                     </div>
 
                     <div className="controls">
                         <div className="filter-group">
-                            <span className="filter-label">难度筛选：</span>
-                            <div className="btn-group">
-                                {['全部', 'easy', 'medium', 'hard'].map(diff => (
-                                    <button
-                                        key={diff}
-                                        className={`btn ${selectedDifficulty === diff ? 'active' : ''}`}
-                                        onClick={() => setSelectedDifficulty(diff)}
-                                    >
-                                        {diff}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                        <div className="filter-group">
-                            <span className="filter-label">卡包选择（专题）：</span>
-                            <div className="btn-group" style={{ marginBottom: '10px' }}>
-                                <button
-                                    className={`btn ${selectedTopic === '全部' ? 'active' : ''}`}
-                                    onClick={() => handleTopicChange('全部')}
-                                >
-                                    全部卡包
-                                </button>
-                            </div>
                             {/* NLP系列 */}
                             <div className="topic-row">
-                                <span className="category-label">🎒 NLP卡包：</span>
+                                <span className="category-label">NLP</span>
                                 <div className="btn-group">
                                     {['Transformer入门', 'Transformer进阶', '手撕Transformer', 'BERT', 'LLaMA', 'GPT','DeepSeek'].map(topic => (
                                         <button
@@ -2072,7 +2159,7 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
                             </div>
                             {/* 多模态系列 */}
                             <div className="topic-row">
-                                <span className="category-label">🎒 多模态卡包：</span>
+                                <span className="category-label">多模态</span>
                                 <div className="btn-group">
                                     {['ViT', 'CLIP', 'BLIP', 'BLIP2', 'LLaVA'].map(topic => (
                                         <button
@@ -2087,7 +2174,7 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
                             </div>
                             {/* 前置理论 */}
                             <div className="topic-row">
-                                <span className="category-label">🎒 前置理论卡包：</span>
+                                <span className="category-label">前置理论</span>
                                 <div className="btn-group">
                                     <button
                                         className={`btn ${selectedTopic === '经典机器学习' ? 'active' : ''}`}
@@ -2105,7 +2192,7 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
                             </div>
                             {/* 强化学习 */}
                             <div className="topic-row">
-                                <span className="category-label">🎒 强化学习卡包：</span>
+                                <span className="category-label">强化学习</span>
                                 <div className="btn-group">
                                     {['Bandits', 'PG', 'Q-Learning', '策略优化', '人类对齐'].map(topic => (
                                         <button
@@ -2121,9 +2208,32 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
                         </div>
                     </div>
 
-                    <div className="pack-status">
-                        <div>当前卡包：<strong>{selectedTopic === '全部' ? '全部卡包' : selectedTopic}</strong></div>
-                        <div>可抽取卡片：<strong>{displayQuestions.length}</strong> 张</div>
+                    <div className="book-status">
+                        <div className="book-status-main">
+                            <span>
+                            {selectedTopic === '全部' ? (
+                                <>整架：<strong>全部专题混览</strong></>
+                            ) : (
+                                <>在读：<strong>《{selectedTopic}》</strong></>
+                            )}
+                            </span>
+                            {selectedTopic !== '全部' && (
+                                <button
+                                    type="button"
+                                    className="btn btn-ghost book-status-back"
+                                    onClick={() => handleTopicChange('全部')}
+                                >
+                                    整架
+                                </button>
+                            )}
+                        </div>
+                        <div>
+                            {selectedTopic === '全部' ? (
+                                <>当前可见题目：<strong>{displayQuestions.length}</strong> 道</>
+                            ) : (
+                                <>本册题量：<strong>{displayQuestions.length}</strong> 道</>
+                            )}
+                        </div>
                     </div>
 
                     {/* 错题复习按钮 - 右上角固定位置 */}
@@ -2133,7 +2243,7 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
                         disabled={wrongAnswerIds.size === 0}
                         title={wrongAnswerIds.size === 0 ? '暂无错题' : '点击查看错题'}
                     >
-                        {showWrongAnswersOnly ? '✅ 返回全部' : '❌ 错题复习'}
+                        {showWrongAnswersOnly ? '回书架' : '错题复习'}
                         {wrongAnswerIds.size > 0 && (
                             <span className="count-badge">{wrongAnswerIds.size}</span>
                         )}
@@ -2162,7 +2272,7 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
 
                             <div className="topic-intro-actions">
                                 <button className="start-quiz-btn" onClick={startQuiz}>
-                                    🚀 开始做题
+                                    翻开做题
                                 </button>
                             </div>
                         </div>
@@ -2170,42 +2280,20 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
 
                     {/* 手撕Transformer专题说明 */}
                     {!showTopicIntro && selectedTopic === '手撕Transformer' && (
-                        <div style={{
-                            background: 'linear-gradient(135deg, #3498db 0%, #2980b9 100%)',
-                            borderRadius: '12px',
-                            padding: '20px',
-                            marginBottom: '20px',
-                            color: 'white',
-                            border: '1px solid #2980b9',
-                            boxShadow: '0 4px 6px rgba(52, 152, 219, 0.1)'
-                        }}>
-                            <div style={{ fontSize: '1.2em', fontWeight: '600', marginBottom: '8px' }}>
-                                🚀 手撕Transformer - 引导式实战
-                            </div>
-                            <div style={{ fontSize: '0.95em', lineHeight: '1.6', opacity: 0.95 }}>
-                                这是一个循序渐进的引导式学习专题，共14个步骤。你将从零开始，
-                                一步步实现完整的Transformer模型。每一题都有详细的知识点回顾。
-                                建议按顺序完成，也可以选择跳过熟悉的部分。
+                        <div className="callout">
+                            <div className="callout-title">手撕 Transformer · 引导式实战</div>
+                            <div>
+                                循序渐进的引导式专题，共多步从零实现完整 Transformer。每题附知识点回顾，建议按顺序完成，也可跳过已掌握部分。
                             </div>
                         </div>
                     )}
 
                     {/* 错题复习模式说明 */}
                     {!showTopicIntro && showWrongAnswersOnly && (
-                        <div style={{
-                            background: 'linear-gradient(135deg, #e74c3c 0%, #c0392b 100%)',
-                            borderRadius: '12px',
-                            padding: '20px',
-                            marginBottom: '20px',
-                            color: 'white',
-                            border: '1px solid #c0392b',
-                            boxShadow: '0 4px 6px rgba(231, 76, 60, 0.1)'
-                        }}>
-                            <div style={{ fontSize: '1.2em', fontWeight: '600', marginBottom: '8px' }}>
-                                📝 错题复习模式
-                            </div>
-                            <div style={{ fontSize: '0.95em', lineHeight: '1.6', opacity: 0.95 }}>
-                                正在复习 {wrongAnswerIds.size} 道错题。答对后会自动从错题集中移除。加油，把这些题目都搞懂！💪
+                        <div className="callout">
+                            <div className="callout-title">错题复习</div>
+                            <div>
+                                正在复习 {wrongAnswerIds.size} 道错题；答对后会从错题集中移除。
                             </div>
                         </div>
                     )}
@@ -2217,31 +2305,26 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
                         <div className="progress-fill" style={{ width: `${progress}%` }}></div>
                     </div>
 
-                    <div className="question-card trading-card">
+                    <div className="question-card">
                         <div className="question-header">
                             <div className="question-number">
                                 {currentQuestion.topic === '手撕Transformer' ? (
                                     <span>
                                         Step {currentQuestion.order}/{displayQuestions.filter(q => q.topic === '手撕Transformer').length} 
-                                        <span style={{ color: '#95a5a6', fontSize: '0.8em', marginLeft: '8px' }}>
-                                            (第 {currentQuestionIndex + 1} 张卡)
+                                        <span style={{ color: 'var(--muted)', fontSize: '0.75rem', marginLeft: '8px' }}>
+                                            （{currentQuestionIndex + 1} / {displayQuestions.length}）
                                         </span>
                                     </span>
                                 ) : (
-                                    `卡片 ${currentQuestionIndex + 1} / ${displayQuestions.length}`
+                                    `第 ${currentQuestionIndex + 1} / ${displayQuestions.length} 题`
                                 )}
                             </div>
                             <div className="badges">
                                 {/* 题目类型标签 */}
-                                <span className="badge" style={{
-                                    background: currentQuestion.type === '代码默写' ? '#9b59b6' : 
-                                               (currentQuestion.type === '简答' || currentQuestion.type === '填空') ? '#3498db' : '#27ae60',
-                                    color: 'white',
-                                    fontWeight: '600'
-                                }}>
-                                    {currentQuestion.type === '代码默写' ? '💻 代码' :
-                                     currentQuestion.type === '简答' || currentQuestion.type === '填空' ? '📝 问答' :
-                                     currentQuestion.type === '多选' ? '☑️ 多选' : '✓ 选择'}
+                                <span className="badge badge-type">
+                                    {currentQuestion.type === '代码默写' ? '代码' :
+                                     currentQuestion.type === '简答' || currentQuestion.type === '填空' ? '问答' :
+                                     currentQuestion.type === '多选' ? '多选' : '选择'}
                                 </span>
                                 <span className={`badge difficulty-${currentQuestion.difficulty}`}>
                                     {currentQuestion.difficulty}
@@ -2258,21 +2341,10 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
 
                         {/* 提示类型：只显示内容，不需要答题 */}
                         {currentQuestion.type === '提示' && (
-                            <div style={{
-                                background: 'white',
-                                padding: '24px',
-                                borderRadius: '8px',
-                                marginTop: '20px',
-                                color: '#2c3e50',
-                                border: '1px solid #e1e8ed'
-                            }}>
-                                <div 
-                                    style={{
-                                        fontSize: '0.95em',
-                                        lineHeight: '1.8'
-                                    }}
-                                    dangerouslySetInnerHTML={{ 
-                                        __html: marked.parse(currentQuestion.content || '') 
+                            <div className="hint-box">
+                                <div
+                                    dangerouslySetInnerHTML={{
+                                        __html: marked.parse(currentQuestion.content || '')
                                     }}
                                 />
                             </div>
@@ -2312,28 +2384,29 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
                         {showFeedback && (
                             <div className={`feedback ${(currentQuestion.type === '代码默写' || currentQuestion.type === '简答' || currentQuestion.type === '填空') ? 'correct' : (isCorrect ? 'correct' : 'incorrect')}`}>
                                 <div className="feedback-title">
-                                    {(currentQuestion.type === '代码默写' || currentQuestion.type === '简答' || currentQuestion.type === '填空') ? 
-                                        '📖 参考答案' : 
-                                        (isCorrect ? '✅ 回答正确！' : '❌ 回答错误')}
+                                    {(currentQuestion.type === '代码默写' || currentQuestion.type === '简答' || currentQuestion.type === '填空') ?
+                                        '参考答案' :
+                                        (isCorrect ? '回答正确' : '回答错误')}
                                 </div>
                                 
                                 {/* 代码默写题显示参考答案 */}
                                 {currentQuestion.type === '代码默写' && (
                                     <div style={{ 
-                                        background: 'rgba(255,255,255,0.5)', 
-                                        padding: '12px', 
-                                        borderRadius: '6px', 
+                                        background: 'var(--code-bg)', 
+                                        padding: '12px 14px', 
+                                        borderRadius: '2px', 
                                         marginBottom: '12px',
-                                        fontFamily: 'Consolas, Monaco, monospace',
-                                        fontSize: '0.9em'
+                                        border: '1px solid var(--border)',
+                                        fontFamily: 'ui-monospace, Consolas, Monaco, monospace',
+                                        fontSize: '0.875rem'
                                     }}>
-                                        <div style={{ fontWeight: '600', marginBottom: '8px', color: '#2c3e50' }}>
-                                            💡 参考实现：
+                                        <div style={{ fontWeight: '600', marginBottom: '8px', color: 'var(--text)' }}>
+                                            参考实现
                                         </div>
                                         {currentQuestion.answers && currentQuestion.answers.map((answer, idx) => (
                                             <div key={idx} style={{ marginBottom: '6px', display: 'flex', alignItems: 'flex-start' }}>
                                                 <span style={{ 
-                                                    color: '#7f8c8d', 
+                                                    color: 'var(--muted)', 
                                                     marginRight: '8px',
                                                     minWidth: '60px',
                                                     flexShrink: 0
@@ -2341,12 +2414,13 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
                                                     空白{idx + 1}:
                                                 </span>
                                                 <code style={{ 
-                                                    background: '#282c34', 
-                                                    color: '#61afef', 
+                                                    background: 'var(--surface)', 
+                                                    color: 'var(--code-fg)', 
                                                     padding: '4px 8px', 
-                                                    borderRadius: '4px',
-                                                    fontWeight: '600',
-                                                    wordBreak: 'break-all'
+                                                    borderRadius: '2px',
+                                                    fontWeight: '500',
+                                                    wordBreak: 'break-all',
+                                                    border: '1px solid var(--border)'
                                                 }}>
                                                     {answer}
                                                 </code>
@@ -2358,17 +2432,18 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
                                 {/* 简答题和填空题显示标准答案 */}
                                 {(currentQuestion.type === '简答' || currentQuestion.type === '填空') && currentQuestion.answer && (
                                     <div style={{ 
-                                        background: 'rgba(255,255,255,0.5)', 
-                                        padding: '12px', 
-                                        borderRadius: '6px', 
+                                        background: 'var(--code-bg)', 
+                                        padding: '12px 14px', 
+                                        borderRadius: '2px', 
                                         marginBottom: '12px',
-                                        fontSize: '0.95em',
-                                        lineHeight: '1.6'
+                                        fontSize: '0.875rem',
+                                        lineHeight: '1.6',
+                                        border: '1px solid var(--border)'
                                     }}>
-                                        <div style={{ fontWeight: '600', marginBottom: '8px', color: '#2c3e50' }}>
-                                            💡 标准答案：
+                                        <div style={{ fontWeight: '600', marginBottom: '8px', color: 'var(--text)' }}>
+                                            标准答案
                                         </div>
-                                        <div style={{ color: '#2c3e50' }}>
+                                        <div style={{ color: 'var(--text)' }}>
                                             {currentQuestion.answer}
                                         </div>
                                     </div>
@@ -2377,45 +2452,48 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
                                 {/* 代码题显示正确答案 */}
                                 {currentQuestion.type === '代码' && !isCorrect && (
                                     <div style={{ 
-                                        background: 'rgba(255,255,255,0.5)', 
-                                        padding: '12px', 
-                                        borderRadius: '6px', 
+                                        background: 'var(--code-bg)', 
+                                        padding: '12px 14px', 
+                                        borderRadius: '2px', 
                                         marginBottom: '12px',
-                                        fontFamily: 'Consolas, Monaco, monospace',
-                                        fontSize: '0.9em'
+                                        fontFamily: 'ui-monospace, Consolas, Monaco, monospace',
+                                        fontSize: '0.875rem',
+                                        border: '1px solid var(--border)'
                                     }}>
-                                        <div style={{ fontWeight: '600', marginBottom: '8px', color: '#2c3e50' }}>
-                                            💡 正确答案：
+                                        <div style={{ fontWeight: '600', marginBottom: '8px', color: 'var(--text)' }}>
+                                            正确答案
                                         </div>
                                         {currentQuestion.answers.map((answer, idx) => (
                                             <div key={idx} style={{ marginBottom: '6px', display: 'flex', alignItems: 'center' }}>
                                                 <span style={{ 
-                                                    color: '#7f8c8d', 
+                                                    color: 'var(--muted)', 
                                                     marginRight: '8px',
                                                     minWidth: '60px'
                                                 }}>
                                                     空白{idx + 1}:
                                                 </span>
                                                 <code style={{ 
-                                                    background: '#282c34', 
-                                                    color: '#61afef', 
+                                                    background: 'var(--surface)', 
+                                                    color: 'var(--code-fg)', 
                                                     padding: '4px 8px', 
-                                                    borderRadius: '4px',
-                                                    fontWeight: '600'
+                                                    borderRadius: '2px',
+                                                    fontWeight: '500',
+                                                    border: '1px solid var(--border)'
                                                 }}>
                                                     {answer}
                                                 </code>
                                                 {userAnswers[idx] && userAnswers[idx].trim() !== '' && (
                                                     <span style={{ 
                                                         marginLeft: '12px', 
-                                                        color: '#95a5a6',
-                                                        fontSize: '0.85em'
+                                                        color: 'var(--muted)',
+                                                        fontSize: '0.8125rem'
                                                     }}>
                                                         (你的答案: <code style={{ 
-                                                            background: '#fadbd8', 
-                                                            color: '#e74c3c',
+                                                            background: 'rgba(220, 38, 38, 0.08)', 
+                                                            color: 'var(--bad)',
                                                             padding: '2px 6px',
-                                                            borderRadius: '3px'
+                                                            borderRadius: '2px',
+                                                            border: '1px solid var(--bad)'
                                                         }}>{userAnswers[idx]}</code>)
                                                     </span>
                                                 )}
@@ -2438,22 +2516,17 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
                         <div className="action-buttons">
                             {currentQuestionIndex > 0 && (
                                 <button className="btn" onClick={handlePrevious}>
-                                    ← 上一题
+                                    上一题
                                 </button>
                             )}
                             
                             {/* 代码默写专属：查看答案按钮 */}
                             {currentQuestion.type === '代码默写' && currentQuestion.fullCode && (
-                                <button 
-                                    className="btn" 
+                                <button
+                                    className="btn btn-ghost"
                                     onClick={() => setShowFullCode(!showFullCode)}
-                                    style={{ 
-                                        background: showFullCode ? '#e74c3c' : '#f39c12',
-                                        color: 'white',
-                                        border: 'none'
-                                    }}
                                 >
-                                    {showFullCode ? '📝 返回默写' : '👁️ 查看答案'}
+                                    {showFullCode ? '返回默写' : '查看参考'}
                                 </button>
                             )}
                             
@@ -2464,23 +2537,18 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
                                         onClick={handleSubmit}
                                         disabled={!canSubmit}
                                     >
-                                        {currentQuestion.type === '代码默写' ? '👁️ 查看答案' :
-                                         (currentQuestion.type === '简答' || currentQuestion.type === '填空') ? '📖 阅读答案' :
+                                        {currentQuestion.type === '代码默写' ? '查看答案' :
+                                         (currentQuestion.type === '简答' || currentQuestion.type === '填空') ? '阅读答案' :
                                          '提交答案'}
                                     </button>
                                     {/* 跳过按钮 - 仅在手撕Transformer专题显示 */}
                                     {currentQuestion.topic === '手撕Transformer' && 
                                      currentQuestionIndex < displayQuestions.length - 1 && (
-                                        <button 
-                                            className="btn" 
+                                        <button
+                                            className="btn btn-muted"
                                             onClick={handleNext}
-                                            style={{ 
-                                                background: '#95a5a6',
-                                                color: 'white',
-                                                border: 'none'
-                                            }}
                                         >
-                                            跳过此题 →
+                                            跳过
                                         </button>
                                     )}
                                 </>
@@ -2488,7 +2556,7 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
                                 <>
                                     {currentQuestionIndex < displayQuestions.length - 1 && (
                                         <button className="btn next" onClick={handleNext}>
-                                            下一张卡 →
+                                            下一题
                                         </button>
                                     )}
                                 </>
@@ -2500,25 +2568,24 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
 
                     {/* 打乱/恢复按钮 - 仅对非"手撕Transformer"专题显示 */}
                     {selectedTopic !== '手撕Transformer' && (
-                        <button 
-                            className="image-button" 
+                        <button
+                            className={`image-button${shuffledOrder ? ' is-shuffled' : ''}`}
                             onClick={shuffledOrder ? handleResetOrder : handleShuffle}
-                            title={shuffledOrder ? "恢复顺序" : "打乱题目"}
-                            style={{
-                                background: shuffledOrder ? '#e67e22' : '#f39c12'
-                            }}
+                            title={shuffledOrder ? '恢复顺序' : '打乱题目'}
+                            aria-label={shuffledOrder ? '恢复顺序' : '打乱题目'}
                         >
-                            {shuffledOrder ? '📋' : '🔀'}
+                            ⇄
                         </button>
                     )}
 
                     {/* 资源链接按钮 */}
-                    <button 
-                        className="resource-button" 
+                    <button
+                        className="resource-button"
                         onClick={() => setShowResources(true)}
                         title="学习资源"
+                        aria-label="学习资源"
                     >
-                        📚
+                        ⋯
                     </button>
 
                     {/* 资源链接模态框 */}
@@ -2529,10 +2596,10 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
                                     ×
                                 </button>
                                 
-                                <h2>📚 Transformer 学习资源</h2>
+                                <h2>学习资源</h2>
                                 
                                 <div className="resource-section">
-                                    <h3>📄 经典论文</h3>
+                                    <h3>论文</h3>
                                     {resources.papers.map((paper, index) => (
                                         <a 
                                             key={index} 
@@ -2548,7 +2615,7 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
                                 </div>
 
                                 <div className="resource-section">
-                                    <h3>💻 代码仓库</h3>
+                                    <h3>代码</h3>
                                     {resources.repos.map((repo, index) => (
                                         <a 
                                             key={index} 
@@ -2564,7 +2631,7 @@ LLaVA展示了如何通过简单的架构和高质量数据构建强大的多模
                                 </div>
 
                                 <div className="resource-section">
-                                    <h3>🎓 教程与课程</h3>
+                                    <h3>教程</h3>
                                     {resources.tutorials.map((tutorial, index) => (
                                         <a 
                                             key={index} 
